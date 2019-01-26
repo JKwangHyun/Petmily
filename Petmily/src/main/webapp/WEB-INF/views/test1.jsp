@@ -1,10 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
+
 <link href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
 <script src="/Petmily/jqlib/jquery-3.2.1.min.js"></script>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,65 +14,15 @@
 <title>Test1</title>
 </head>
 
-<script type="text/javascript">
-
-$.fn.toggleState = function(b) {
-	$(this).stop().animate({
-		width: b ? "300px" : "50px"
-	}, 600, "easeOutElastic" );
-}
-
-$(document).ready(function() {
-	var container = $(".container");
-	var boxContainer = $(".search-box-container");
-	var submit = $(".submit");
-	var searchBox = $(".search-box");
-	var response = $(".response");
-	var isOpen = false;
-	submit.on("mousedown", function(e) {
-		e.preventDefault();
-		boxContainer.toggleState(!isOpen);
-		isOpen = !isOpen;
-		if(!isOpen) {
-			handleRequest();
-		} else {
-			searchBox.focus();
-		}	
-	});
-	searchBox.keypress(function(e) {
-		if(e.which === 13) {
-			boxContainer.toggleState(false);
-			isOpen = false;
-			handleRequest();
-		}
-	});
-	searchBox.blur(function() {
-		boxContainer.toggleState(false);
-		isOpen = false;
-	});
-	function handleRequest() {
-		// You could do an ajax request here...
-		var value = searchBox.val();
-		searchBox.val('');
-		if(value.length > 0) {
-			response.text(('Searching for "' + value + '" . . .'));
-			response.animate({
-				opacity: 1
-			}, 300).delay(2000).animate({
-				opacity: 0
-			}, 300);
-		}
-	}
-});
-</script>
 
 <style>
 	body {
-		width:100%;
-		margin: 0 auto;
+		margin: 0px;
+		padding: 0px;
 	}
 	.petList {
 		position:relative;float:left;width:250px;height:250px;background-color:white;margin:35px 10px
+<<<<<<< HEAD
 	}
 	* {
   		box-sizing: border-box;
@@ -148,11 +100,22 @@ $(document).ready(function() {
   		line-height: 100%;
   		pointer-event: none;
   		color: #d32f2f;
+
 	}
 </style>
 
 <body>
 	<div id="headbar" style="position:relative;width:100%;height:50px;background-color:black;">
+	</div>
+	
+	<div id="content1" style="position:relative;width:100%;height:480px;background-color:white;">
+	</div>
+	
+	<div id="content2" style="position:relative;width:100%;height:50px;background-color:#F7F7F7;">
+		<div style="position:relative;width:550px;height:50px;margin:0 auto">
+			<input type="search" style="border-radius:10px;width:450px;height:30px;margin-top:10px; position:relative;float:left;"/>
+			<i class="fas fa-th-large" style="position:relative;float:left;margin-top:10px;margin-left:50px;font-size:30px;color:gray"></i>
+		</div>
 	</div>
 	
 	<div id="content1" style="position:relative;width:100%;height:480px;background-color:white;">
@@ -176,5 +139,6 @@ $(document).ready(function() {
 			<div class="petList"></div>
 		</div>
 	</div>
+	
 </body>
 </html>
