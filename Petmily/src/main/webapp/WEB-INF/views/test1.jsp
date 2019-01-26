@@ -2,7 +2,9 @@
     pageEncoding="UTF-8"%>
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
 <link href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<script src="/Petmily/jqlib/jquery-3.2.1.min.js"></script>
 <!DOCTYPE html>
 <html>
 <head>
@@ -67,10 +69,13 @@ $(document).ready(function() {
 		width:100%;
 		margin: 0 auto;
 	}
+	.petList {
+		position:relative;float:left;width:250px;height:250px;background-color:white;margin:35px 10px
+	}
 	* {
   		box-sizing: border-box;
 	}
-	.container {
+	/* .container {
   		display: block;
  		position: absolute;
   		text-align: center;
@@ -97,12 +102,12 @@ $(document).ready(function() {
   		-ms-transform: rotate(-3deg);
   		transform: rotate(-3deg);
   		z-index: -1;
-	}
+	} */
 	.search-box-container {
   		display: inline-block;
   		box-sizing: content-box;
-  		height: 50px;
-  		width: 50px;
+  		height: 40px;
+  		width: 40px;
   		padding: 0;
   		background-color: #fff;
   		border: 3px solid #f44336;
@@ -116,6 +121,8 @@ $(document).ready(function() {
   		padding: 5px;
   		border: 0;
   		outline: none;
+  		position:relative;
+  		margin:0 auto;
 	}
 	.search-box {
   		width: calc(100% - 50px);
@@ -128,7 +135,7 @@ $(document).ready(function() {
 	}
 	.submit {
   		float: right;
-  		width: 50px;
+  		width: 40px;
   		left: 0;
   		top: 0;
   		font-size: 1.2em;
@@ -141,26 +148,34 @@ $(document).ready(function() {
   		line-height: 100%;
   		pointer-event: none;
   		color: #d32f2f;
+  		
 	}
 </style>
 
 <body>
-	<div style="position:relative;width:100%;height:50px;background-color:black;"></div>
-	<div style="position:relative;width:100%;height:480px;background-color:white;"></div>
-	<div style="position:relative;width:100%;height:50px;background-color:#F7F7F7;">
-		<div class="container">
-  			<div class="search-box-container">
-    			<button class="submit"><i class="fa fa-search"></i></button>
-    			<input class="search-box">
-  			</div>
-		</div>
-		<!-- <i class="fas fa-th-large" style="position:relative;float:left;margin-left:270px;margin-top:10px;font-size:30px;color:gray"></i> -->
+	<div id="headbar" style="position:relative;width:100%;height:50px;background-color:black;">
 	</div>
-	<div style="position:relative;width:100%;height:320px;background-color:#f0efef;margin:0 auto;">
-		<div style="position:relative;float:left;width:250px;height:250px;background-color:white;margin-top: 35px;margin-left:240px;margin-right: 10px;"></div>
-		<div style="position:relative;float:left;width:250px;height:250px;background-color:white;margin:35px 10px"></div>
-		<div style="position:relative;float:left;width:250px;height:250px;background-color:white;margin:35px 10px"></div>
-		<div style="position:relative;float:left;width:250px;height:250px;background-color:white;margin:35px 10px"></div>
+	
+	<div id="content1" style="position:relative;width:100%;height:480px;background-color:white;">
+	</div>
+	
+	<div id="content2" style="position:relative;width:100%;height:50px;background-color:#F7F7F7;">
+		<div class="search-box-container">
+			<button class="submit"><i class="fa fa-search"></i></button>
+    			<input class="search-box">
+			<!-- <input type="search" style="border-radius:10px;width:450px;height:30px;margin-top:10px; position:relative;float:left;"/> -->
+		</div>
+		<i class="fas fa-th-large" style="position:relative;float:left;margin-top:10px;margin-left:50px;font-size:30px;color:gray"></i>
+	</div>
+	
+
+	<div id="content3" style="position:relative;width:100%;height:320px;background-color:#f0efef;">
+		<div style="position:relative;width:1140px;height:320px;margin:0 auto">
+			<div class="petList"></div>
+			<div class="petList"></div>
+			<div class="petList"></div>
+			<div class="petList"></div>
+		</div>
 	</div>
 </body>
 </html>
