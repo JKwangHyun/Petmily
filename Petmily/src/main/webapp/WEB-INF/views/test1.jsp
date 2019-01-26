@@ -18,7 +18,7 @@
 	
 </style>
 <body>
-	<div id="headbar01" style="position:relative;width:100%;height:50px;background-color:black;">
+	<div id="headbar" style="position:relative;width:100%;height:50px;background-color:black;">
 	</div>
 	
 	<div id="content1" style="position:relative;width:100%;height:480px;background-color:white;">
