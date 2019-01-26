@@ -148,7 +148,6 @@ $(document).ready(function() {
   		line-height: 100%;
   		pointer-event: none;
   		color: #d32f2f;
-  		
 	}
 </style>
 
