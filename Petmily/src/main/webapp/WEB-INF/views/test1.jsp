@@ -651,6 +651,7 @@ Petmily 서비스 회원 또는 비회원과의 관계를 설명하며,
 		  <button id="signUp_close1" style="left:40;float:left;"><i class="fas fa-arrow-left"></i>&nbsp;&nbsp;&nbsp;BACK</button>
 		  </div>
 		</form>
+		
 	</div>
 	
 </body>
