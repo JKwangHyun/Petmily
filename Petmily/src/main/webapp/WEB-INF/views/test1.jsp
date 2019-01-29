@@ -4,6 +4,8 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
 <link href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="//cdn.rawgit.com/hiun/NanumSquare/master/nanumsquare.css">
+<link rel="stylesheet" href="resources/css/signForm.css">
+<link rel="stylesheet" href="resources/css/joinForm.css">
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
 <script src="/Petmily/jqlib/jquery-3.2.1.min.js"></script>
@@ -109,16 +111,27 @@ $(document).ready(function() {
 			$("#other").css("font-weight","normal");
 		});
 		
-		// 로그인 팝업창
-		$("#signIn").click(function(){ 
-			$("#popup_wrap").css("display", "block"); 
+		// 회원가입 팝업창
+		$("#signUp1").click(function(){ 
+			$("#signUp_wrap1").css("display", "block"); 
 			$("#mask").css("display", "block"); 
 		}); 
-		$("#popup_close").click(function(){ 
-			$("#popup_wrap").css("display", "none"); 
+		$("#signUp_close1").click(function(){ 
+			$("#signUp_wrap1").css("display", "none"); 
 			$("#mask").css("display", "none"); 
 		}); 
-});  
+		
+		// 로그인 팝업창
+		$("#signIn").click(function(){ 
+			$("#signIn_popup").css("display", "block"); 
+			$("#mask").css("display", "block"); 
+		}); 
+		$("#signIn_close").click(function(){ 
+			$("#signIn_popup").css("display", "none"); 
+			$("#mask").css("display", "none"); 
+		}); 
+	});  
+	
 
 		//checkbox
 		$(function() {
@@ -132,8 +145,30 @@ $(document).ready(function() {
 			// 전체선택 체크박스의 체크상태 판별
 			$("#checkall").prop("checked", false);
 		});
-	});
+			
+			
+	// 화면
+		$(window).resize(function() {
+			if ($(window).width() > 1400) {
+				$("#content2_container").css("width", "1060px");
+				$("#content3").css("height", "750px");
+				$("#petList_container").css("width", "1080px");
+				$("#petList_container").css("height", "750px");
+			}
 
+			else if ($(window).width() < 1100) {
+				$("#content2_container").css("width", "510px");
+				$("#content3").css("height", "1500px");
+				$("#petList_container").css("width", "540px");
+				$("#petList_container").css("height", "1500px");
+			} else if ($(window).width() < 1400) {
+				$("#content2_container").css("width", "790px");
+				$("#content3").css("height", "1100px");
+				$("#petList_container").css("width", "820px");
+				$("#petList_container").css("height", "1100px");
+			}
+		});
+	});
 </script>
 
 <style>
@@ -150,7 +185,7 @@ $(document).ready(function() {
 	font-weight:bold;
 	}
 	.petList2 {
-		position:relative;float:left;width:250px;height:300px;background-color:white;margin:0 10px;text-align:center;
+		position:relative;float:left;width:250px;height:300px;background-color:white;margin:35px 10px;text-align:center;
 	}
 	.petlist2 a{
 	text-decoration:none;
@@ -277,10 +312,35 @@ $(document).ready(function() {
 		text-decoration:none;
 		color:white;
 	}
-	/* 팝업창 */
 	
+	/* 로그인 팝업창 */
+	#signIn_popup {
+		width:550px;
+		height:400px; 
+		background:#f0efef; 
+		border: 0px solid black; 
+		border-radius:20px;
+		position:fixed; top:50%; left:46%; margin:-250px 0 0 -200px; z-index:9999; display:none;
+		-webkit-animation-name: animatetop;
+  		-webkit-animation-duration: 0.4s;
+  		animation-name: animatetop_signIn;
+  		animation-duration: 0.4s
+	} 
+	#mask {width:100%; height:100%; position:fixed; background:rgba(0,0,0,0.7) repeat; top:0; left:0; z-index:999; display:none;} 
+	#signIn_close {z-index:9999;color:#333;font-size:20px;position: absolute;right:10; top:10;cursor:pointer;}
+	
+	@-webkit-keyframes animatetop_signIn {
+		from {top:-300px; opacity:0} 
+ 		to {top:50%; opacity:1}
+	}
+	@keyframes animatetop_signIn {
+		from {top:-300px; opacity:0}
+		to {top:50%; opacity:1}
+	}
+	
+	/*회원가입 팝업창 */
 	/* 팝업 내용 */
-	#popup_wrap {width:600px; height:800px; background:#f0efef; border: 0px solid black; border-radius:20px;position:fixed; top:35%; left:45%; margin:-250px 0 0 -200px; z-index:9999; display:none;
+	#signUp_wrap1 {width:600px; height:800px; background:#f0efef; border: 0px solid black; border-radius:20px;position:fixed; top:35%; left:45%; margin:-250px 0 0 -200px; z-index:9999; display:none;
 				-webkit-animation-name: animatetop;
   				-webkit-animation-duration: 0.4s;
   				animation-name: animatetop;
@@ -288,7 +348,6 @@ $(document).ready(function() {
 	} 
 	/* 팝업 뒷 배경 */
 	#mask {width:100%; height:100%; position:fixed; background:rgba(0,0,0,0.7) repeat; top:0; left:0; z-index:999; display:none;} 
-	#popup_close {z-index:9999; width: 25px; height: 25px; background-color:black; color:white; text-align: center; border: none; font-size: 18px;position: relative; left:365px;top:-68px;}
 	/* Add Animation */
 	@-webkit-keyframes animatetop {
 		from {top:-300px; opacity:0} 
@@ -369,7 +428,7 @@ $(document).ready(function() {
 			</ul>
 			<ul id="sign" style="position:relative;top:-8px;float:right;">
 				<li id="signIn">Sign In</li>
-				<li><a href="#">Sign Up</a></li>
+				<li id="signUp1">Sign Up</li>
 			</ul>
 		</div>
 	</div>
@@ -412,7 +471,7 @@ $(document).ready(function() {
 	</div>
 	
 	<div id="content2" style="position:relative;width:100%;height:50px;background-color:#F7F7F7;margin:0 auto;">
-    	<div style="position:relative;width:1060px;height:50px;margin:0 auto">
+    	<div id="content2_container" style="position:relative;width:1060px;height:50px;margin:0 auto">
 	    	<div class="container">
 			    <div class="search-box-container">
 				    <button class="submit"><i class="fa fa-search" style="padding-left: 5px;"></i></button>
@@ -432,7 +491,7 @@ $(document).ready(function() {
 	
 
 	<div id="content3" style="position:relative;width:100%;height:700px;background-color:#f0efef;">
-		<div style="position:relative;width:1080px;height:320px;margin:0 auto">
+		<div id="petList_container" style="position:relative;width:1080px;height:320px;margin:0 auto">
 			<div class="petList" >
 				<img class="pets" src="resources/img/dog1.jpg"  />
 				<a href="" ><i class="fas fa-venus" style="color:hotpink;"></i>&nbsp; 미니 핀  1살</a><br>
@@ -457,8 +516,6 @@ $(document).ready(function() {
 				<a href="" ><i class="fas fa-venus" style="color:hotpink;"></i>&nbsp; 토끼  1살</a><br>
 				<i class="fas fa-eye" style="margin-top:10px;color:gray"> 37&nbsp;<i class="fas fa-thumbtack"> 6</i></i>
 			</div>
-		</div>
-		<div style="position:relative;width:1080px;height:320px;margin:0 auto">
 			<div class="petList2">
 				<img class="pets" src="resources/img/cat2.jpg"  />
 				<a href="" ><i class="fas fa-mars"style="color:#4285F4;"></i>&nbsp; 페르시안  4개월</a><br>
@@ -480,11 +537,34 @@ $(document).ready(function() {
 				<i class="fas fa-eye" style="margin-top:10px;color:gray"> 30&nbsp;<i class="fas fa-thumbtack"> 6</i></i>
 			</div>
 		</div>
+		</div>
+		
+			
+	
+	
+	<!-- 로그인 팝업창 -->
+	<div id="mask"></div>
+	<div id="signIn_popup">
+		<form id="signIn_form" action="#">
+	  		<h1 style="pointer-events:none;cursor:default;">Sign In</h1>
+	  		<div class="question">
+	    		<input type="text" required/>
+	    		<label>UserID</label>
+	  		</div>
+	 		 <div class="question">
+	    		<input type="password" required/>
+	   			<label>Password</label>
+	  		</div>
+	  		<input type="button" value="로그인">
+	  		<i id="findid" class="fas fa-user" style="margin-left:170px;cursor:pointer;color:#333;"> Find ID</i>
+	  		<i id="findpw" class="fas fa-key" style="margin-left:20px;cursor:pointer;color:#333;"> Find PW</i>
+		</form>
+		<i id="signIn_close" class="fas fa-sign-out-alt"></i>
 	</div>
 	
 	<!-- 이용약관 팝업창 -->
 	<div id="mask"></div>
-	<div id="popup_wrap">
+	<div id="signUp_wrap">
 		<form id="joincheck" action="" style="margin-top:100px;text-align:center;">
 		  <div class="boxes" style="padding-left:100px;">
 		  	 <input type="checkbox" id="checkall" name="checkall" value="all" style="float:center;">
@@ -526,10 +606,51 @@ Petmily 서비스 회원 또는 비회원과의 관계를 설명하며,
 		  </div>
 		  <div class="buttonnn" style="margin-top:80px;" >
 		  <button type="submit" style="right:40;float:right;">NEXT&nbsp;&nbsp;&nbsp;<i class="fas fa-arrow-right"></i></button>
-		  <button onclick="history.back()" style="left:40;float:left;"><i class="fas fa-arrow-left"></i>&nbsp;&nbsp;&nbsp;BACK</button>
+		  <button id="signUp_close" style="left:40;float:left;"><i class="fas fa-arrow-left"></i>&nbsp;&nbsp;&nbsp;BACK</button>
 		  </div>
 		</form>
 		
+	</div>
+	
+	<!-- 회원가입 팝업창 -->
+	<div id="mask"></div>
+	<div id="signUp_wrap1">
+		<form action="">
+		 <div style="position:relative;top:100px;display: grid;">		
+		  <label for="id" class="inp">
+  		  	<input type="text" id="id" name="id" placeholder="&nbsp;">
+  	      	<span class="label">아이디</span>
+          	<span class="border"></span>
+	      </label>
+	      <label for="pw" class="inp" style="top:20px;">
+  		  	<input type="password" id="pw" name="pw" placeholder="&nbsp;">
+  	      	<span class="label">비밀번호</span>
+          	<span class="border"></span>
+	      </label>
+	      <label for="pwcheck" class="inp" style="top:40px;">
+  		  	<input type="password" id="pwcheck" name="pwcheck" placeholder="&nbsp;">
+  	      	<span class="label">비밀번호 확인</span>
+          	<span class="border"></span>
+	      </label>
+	       <label for="name" class="inp" style="top:60px;">
+  		  	<input type="text" id="name" name="name" placeholder="&nbsp;">
+  	      	<span class="label">이름</span>
+          	<span class="border"></span>
+	      </label>
+	      </div>
+	      <div style="position:relative;top:100px;left:200px;">
+	      <input type="checkbox" id="checkM" name="checkM"value="M">
+  		  <label for="checkM" style="position:relative;top:80px;float:left;"><font style="font-family:'Nanum Square';font-weight:bold;color:#333;">남성</font></label>
+  		  <!-- </div> -->
+  		  <!-- <div style="position:relative;top:100px;left:300px;"> -->
+  		  <input type="checkbox" id="checkF" name="checkF"value="F">
+  		  <label for="checkF" style="position:relative;top:80px;left:110px;"><font style="font-family:'Nanum Square';font-weight:bold;color:#333;">여성</font></label>
+	      </div>
+		  <div class="buttonnn" style="margin-top:300px;" >
+		  <button type="submit" style="right:40;float:right;">NEXT&nbsp;&nbsp;&nbsp;<i class="fas fa-arrow-right"></i></button>
+		  <button id="signUp_close1" style="left:40;float:left;"><i class="fas fa-arrow-left"></i>&nbsp;&nbsp;&nbsp;BACK</button>
+		  </div>
+		</form>
 	</div>
 	
 </body>
