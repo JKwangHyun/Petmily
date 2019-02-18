@@ -1,12 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
 <link href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="resources/css/signForm.css">
+<link href="https://fonts.googleapis.com/css?family=Do+Hyeon" rel="stylesheet">
 <link rel="stylesheet" href="resources/css/joinForm.css">
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
 <script src="/Petmily/jqlib/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f264b44d614a364c2551241f9596ac9d&libraries=services,clusterer,drawing"></script>
 <!DOCTYPE html>
 <html>
 <head>
@@ -237,6 +240,27 @@
 		border:none;
 		background-color:#f0efef;
 	}
+	#adoptionDetail {width:800px; height:1000px; background:#F8F8F8; border: 0px solid black; border-radius:20px;position:absolute ; top:35%; left:40%; margin:-250px 0 0 -200px; z-index:9999; display:none;
+				-webkit-animation-name: animatetop;
+  				-webkit-animation-duration: 0.4s;
+  				animation-name: animatetop;
+  				animation-duration: 0.4s
+	} 
+	@keyframes animatetop_findHospital {
+		from {top:-300px; opacity:0}
+		to {top:45%; opacity:1}
+	}
+	/* 동물병원찾기 팝업 */
+	#findHospital_form {
+		width:900px;
+		height:650px; 
+		background:#f8f8f8; 
+		border: 0px solid black; 
+		border-radius:20px;
+		position:fixed; top:45%; left:36%; margin:-250px 0 0 -200px; z-index:9999; display:none;
+  		animation-name: animatetop_findHospital;
+  		animation-duration: 0.4s
+	}
 </style>
 <script>
 	$.fn.toggleState = function (b) {
@@ -350,7 +374,7 @@
 		}); 
 		
 		// 회원가입 팝업창
-		$("#signUp").click(function(){ 
+		$(".signUp").click(function(){ 
 			$("#signUp_wrap").css("display", "block"); 
 			$("#mask").css("display", "block"); 
 		}); 
@@ -378,15 +402,17 @@
 		});
 		
 		// expcheck
-		$('input[type="checkbox"][name="yes"]').click(function(){
+		$('input[type="checkbox"][name="exp"]').click(function(){
 			if($(this).prop('checked')) {
-				$('input[type="checkbox"][name="yes"]').prop('checked', false);
+				$('input[type="checkbox"][name="exp"]').prop('checked', false);
 				$(this).prop('checked', true);
 			}
 			if($('input:checkbox[id="yes"]').is(":checked")==true)
 				$("#exp").css("display","grid");
-			else if($('input:checkbox[id="no"]').is(":checked")==true)
+			else if($('input:checkbox[id="no"]').is(":checked")==true){
 				$("#exp").css("display","none");
+			    $('#expArea').html('');
+			}
 			else $("#exp").css("display","none");
 		 });
 		// gendercheck
@@ -419,7 +445,126 @@
 			}
 		});
 		
-	});
+		//회원가입 focusout
+		$('#id').focusout(function(){
+			var id = $('#id').val();
+			
+			if(id.length=='') {
+				$('#idArea').html('아이디를 입력하세요.');
+				return;
+			}else $('#idArea').html('');
+			if(id.length<4 || id.replace(/[a-z.0-9]/g,'').length>0) {
+				
+				$('#idArea').html('4자 이상 영문,숫자만 입력 가능합니다.');
+				return;
+			}else $('#idArea').html('');
+			
+			$.ajax({
+				type:'Post',
+				url:"idcheck",
+				data:{
+					id: $('#id').val(),
+				},
+				success:function(result){
+					$('#idArea2').html(result)
+				}
+			});
+		});
+		$('#pw').focusout(function(){
+			var pw= $('#pw').val();
+			if(pw.length=='') {
+				$('#pwArea1').html('비밀번호를 입력하세요. ');
+				return;
+			}else $('#pwArea1').html('');
+			if(pw.length<4 || pw.replace(/[a-z.0-9]/g,'').length>0) {
+				$('#pwArea1').html('4자 이상 영문,숫자만 입력 가능합니다.');
+				return;
+			}else $('#pwArea1').html('');
+		});
+		$('#pwcheck').focusout(function(){
+			var pw= $('#pw').val();
+			var pwcheck= $('#pwcheck').val();
+			if(pw.length=='') {
+				$('#pwArea1').html('비밀번호를 입력하세요. ');
+				return;
+			}else $('#pwArea1').html('');
+			if(pw.length<4 || pw.replace(/[a-z.0-9]/g,'').length>0) {
+				$('#pwArea1').html('4자 이상 영문,숫자만 입력 가능합니다.');
+				return;
+			}else $('#pwArea1').html('');
+			if(pw == pwcheck) {
+				$('#pwArea2').html('<i style="color:#7CBB00;" class="fas fa-check"></i>');
+				return;
+			}else if(pw != pwcheck) {
+				$('#pwArea2').html('<i style="color:#da532c;" class="fas fa-times"></i>');
+				return;
+			}
+		});
+		$('#name').focusout(function(){
+			var name= $('#name').val();
+			if(name.length=='') {
+				$('#nameArea').html('이름을 입력하세요. ');
+				return;
+			}else $('#nameArea').html('');
+			if(name.replace(/[가-힣.a-z]/g,'').length>0) {
+				$('#nameArea').html('한글,영어만 사용 가능합니다.');
+				return;
+			}else $('#nameArea').html('');
+		});
+		$('#bday').focusout(function(){
+			var bday=$('#bday').val();
+			if(bday.length != 6) {
+				$('#bdayArea').html('생년월일 6자리를 정확히 입력하세요.');
+				return;
+			}else $('#bdayArea').html('');
+		});
+		$('#hp1').focusout(function(){
+			var hp1=$('#hp1').val();
+			
+			if(hp1.length != 3) {
+				$('#phnumArea').html('전화번호를 정확히 입력하세요.');
+				return;
+			}else $('#phnumArea').html('');
+		});
+		$('#hp2').focusout(function(){
+			var hp2=$('#hp2').val();
+			
+			if(hp2.length != 4) {
+				$('#phnumArea').html('전화번호를 정확히 입력하세요.');
+				return;
+			}else $('#phnumArea').html('');
+		});
+		$('#hp3').focusout(function(){
+			var hp3=$('#hp3').val();
+			
+			if(hp3.length != 4) {
+				$('#phnumArea').html('전화번호를 정확히 입력하세요.');
+				return;
+			}else $('#phnumArea').html('');
+		});
+		$('#pets').focusout(function(){
+			var detail1=$('#pets').val();
+			if(detail1.length=='') {
+				$('#expDetailArea').html('상세 경험을 입력해 주세요.');
+				return;
+			}else $('#expDetailArea').html('');
+		});
+		$('#period').focusout(function(){
+			var detail2=$('#period').val();
+			if(detail2.length=='') {
+				$('#expDetailArea').html('상세 경험을 입력해 주세요.');
+				return;
+			}else $('#expDetailArea').html('');
+		});
+		
+		// Find Pet Hospital
+		$('#FindHospital').click(function(){
+			$('#findHospital_form').css('display','block');
+			$('#mask').css('display','block');
+		});
+	
+		
+	});//document.ready
 	
 	// check 알림
 	function nextB() {
@@ -447,71 +592,123 @@
 		var pw= $('#pw').val();
 		var pwcheck= $('#pwcheck').val();
 		var name= $('#name').val();
-		var gender= $('#gender').val();
 		var bday=$('#bday').val();
 		var hp1=$('#hp1').val();
 		var hp2=$('#hp2').val();
 		var hp3=$('#hp3').val();
-		var exp=$('#exp').val();
-		var detail1=$('#detail1').val();
-		var detail2=$('#detail2').val();
+		var detail1=$('#pets').val();
+		var detail2=$('#period').val();
 		
 		if(id.length=='') {
 			$('#idArea').html('아이디를 입력하세요.');
 			return;
-		}
+		}else $('#idArea').html('');
 		if(id.length<4 || id.replace(/[a-z.0-9]/g,'').length>0) {
-			$('#idArea').html('5자 이상 영문,숫자만 입력 가능합니다.');
+			
+			$('#idArea').html('4자 이상 영문,숫자만 입력 가능합니다.');
 			return;
-		}
+		}else $('#idArea').html('');
 		if(pw.length=='') {
 			$('#pwArea1').html('비밀번호를 입력하세요. ');
 			return;
-		}
-		if(pw.length<4 || password.replace(/[a-z.0-9]/g,'').length>0) {
-			$('#pwArea1').html('5자 이상 영문,숫자만 입력 가능합니다.');
+		}else $('#pwArea1').html('');
+		if(pw.length<4 || pw.replace(/[a-z.0-9]/g,'').length>0) {
+			$('#pwArea1').html('4자 이상 영문,숫자만 입력 가능합니다.');
 			return;
-		}
-		if(pwcheck.length=='') {
-			$('#pwArea2').html('비밀번호 입력 확인을 해주세요. ');
+		}else $('#pwArea1').html('');
+		if(pwcheck.length=='' || (pw != pwcheck)) {
+			$('#pwArea2').html('<i style="color:#da532c;"  class="fas fa-times"></i>');
 			return;
-		}
-		if(pw != pwcheck) {
-			$('#pwArea2').html('비밀번호가 일치하지 않습니다.');
-			return;
-		}
-		
-		if(name=='') {
+		}else $('#pwArea2').html('<i style="color:#7CBB00;" class="fas fa-check"></i>');
+		if(name.length=='') {
 			$('#nameArea').html('이름을 입력하세요. ');
 			return;
-		}
+		}else $('#nameArea').html('');
 		if(name.replace(/[가-힣.a-z]/g,'').length>0) {
 			$('#nameArea').html('한글,영어만 사용 가능합니다.');
 			return;
-		}
-		if(gender=='') {
-			$('#gendertArea').html('성별을 선택하세요. ');
-			return;
-		}
+		}else $('#nameArea').html('');
+		if($('input:checkbox[id="checkM"]').is(":checked")==false 
+	            && $('input:checkbox[id="checkF"]').is(":checked")==false) {
+	         $('#genderArea').html('성별을 선택하세요. ');
+	         return;
+	      }else $('#genderArea').html('');
 		if(bday.length != 6) {
 			$('#bdayArea').html('생년월일 6자리를 정확히 입력하세요.');
 			return;
-		}
+		}else $('#bdayArea').html('');
 		if((hp1.length != 3)||(hp2.length != 4)||(hp3.length != 4)) {
 			$('#phnumArea').html('전화번호를 정확히 입력하세요.');
 			return;
-		}
-		if(exp=='') {
-			$('#expArea').html('애완동물 키워본 경험을 선택하세요.');
-			return;
-		}
-		if((detail1=='')||(detail2=='')) {
-			$('#datailArea').html('상세 경험을 입력해 주세요.');
-			return;
-		}
-		$('signUp_form').submit();
+		}else $('#phnumArea').html('');
+		if($('input:checkbox[id="yes"]').is(":checked")==false 
+	            && $('input:checkbox[id="no"]').is(":checked")==false) {
+	         $('#expArea').html('애완동물 키워본 경험을 선택하세요. ');
+	         return;
+	      }else $('#expArea').html('');
+		if($('input:checkbox[id="yes"]').is(":checked")==true){
+			if((detail1.length=='')||(detail2.length=='')) {
+				$('#expDetailArea').html('상세 경험을 입력해 주세요.');
+				return;
+			}else $('#expDetailArea').html('');
+		} 
+		$('#signUp_form').submit();
+		alert('회원가입이 완료되었습니다.');
 	}
-
+	
+	//핸드폰 번호,생년월일 숫자 입력 제한
+	function maxLengthCheck(object){
+    if (object.value.length > object.maxLength){
+      object.value = object.value.slice(0, object.maxLength);
+    }    
+  }
+	// 로그인
+	function login() {
+		var id = $('#logid').val();
+		var pw = $('#logpw').val();
+		if (id.length < 1) {
+			$('#logincheck').html('아이디를 입력해주세요.');
+			return;
+		}
+		if (pw.length < 1) {
+			$('#logincheck').html('비밀번호를 입력해주세요.');
+			return;
+		}
+		$.ajax({
+			type : "Post",
+			url : "login",
+			data : {
+				id : $("#logid").val(),
+				pw : $("#logpw").val(),
+			},
+			success : function(result) {
+				$("#logincheck").html(result);
+			}
+		});
+		$('#logincheck').html('');
+	}
+	
+	function adoptionDetail(n,r){
+		$.ajax({
+			type:'Post',
+			url:"adoptionDetail",
+			data:{
+				seq:n,
+				root:r,
+				id:'${Login.id}',
+			},
+			success:function(result){
+				$('#detailForm').html(result)
+			}
+		});
+		$("#adoptionDetail").css("display", "block"); 
+		$("#mask").css("display", "block"); 
+		
+	}
+	
+	function complete(){
+		alert('분양이 완료되어 더 이상 열람할 수 없습니다.');
+	}
 </script>
 <body>
 	<!-- header -->
@@ -521,28 +718,38 @@
 			<ul id="menu" style="position:relative;top:-8px;float:left;">
 				<li id="adoption"><a href="#">Adoption Of Pets</a></li>
 				<li id="community"><a href="#">Community</a></li>
-				<li><a href="#">Find Pet Hospital</a></li>
+				<li id="FindHospital"><a href="#">Find Pet Hospital</a></li>
 			</ul>
 			<ul id="sign" style="position:relative;top:-8px;float:right;">
-				<li id="signIn">Sign In</li>
-				<li id="signUp">Sign Up</li>
+				<c:choose>
+					<c:when test="${Login.id == null}">
+						<li id="signIn">Sign In</li>
+						<li id="signUp" class="signUp">Sign Up</li>
+					</c:when>
+					<c:when test="${Login.id != null}">
+						<li><a href="myPage?id=${Login.id}"><i class="fas fa-user-circle" style="font-size:25px;margin-top:-1px;"></i><font style="position:relative;top:-2px;"> ${Login.name} 님</font></a></li>
+						<li><a href="logout" style="margin:0;">Logout</a></li>
+					</c:when>
+				</c:choose>
 			</ul>
+			
 		</div>
 	</div>
 	
-	<!-- Community slide -->
+	<!--  Adoption Of Pets slide -->
 	<div id="menu_slide_Adoption" style="position:absolute;width:190px;height:85px;background-color:#333;z-index:10;left:220px;border-bottom-left-radius:10px;border-bottom-right-radius:10px;">
 		<ul class="menu_slide">
-		<li style="margin-bottom:15px;"><a href="">Registration</a></li>
-			<li><a href="">Adoption</a></li>
+		<li style="margin-bottom:15px;"><a href="registration">Registration</a></li>
+			<li><a href="adoptionList">Adoption</a></li>
 			
 		</ul>
 	</div>
 	
-	<!--  Adoption Of Pets slide -->
+	
+	<!-- Community slide -->
 	<div id="menu_slide_Community" style="position:absolute;width:190px;height:85px;background-color:#333;z-index:10;left:380px;border-bottom-left-radius:10px;border-bottom-right-radius:10px;">
 		<ul class="menu_slide">
-			<li style="margin-bottom:15px;"><a href="">Notice</a></li>
+			<li style="margin-bottom:15px;"><a href="noticeList">Notice</a></li>
 			<li><a href="">Sharing Info</a></li>
 		</ul>
 	</div>
@@ -555,7 +762,7 @@
 					<img src="resources/img/22.png" width="550px">
 				</div>
 				<div style="position:relative;top:150;left:80;">
-	               <input type="button" value="Sign Up" style="padding:10px 25px;border:none; border-radius:10px;color:white;font-size:20px;font-weight:bold;background-color:#333">
+	               <input type="button" class="signUp" value="Sign Up" style="padding:10px 25px;border:none; border-radius:10px;color:white;font-size:20px;font-weight:bold;background-color:#333">
 	               <input type="button" value="Adoption" style="margin-left: 30px;padding:10px 25px;border:none;border-radius:10px;color:white;font-size:20px;font-weight:bold;background-color:#333">
 	            </div>
 			</div>
@@ -575,80 +782,72 @@
 			    </div>
 	    	</div>
 	    	<div id="square_back" style="position:absolute;width:50px;height:40px;right:-10;margin-top:5px;background-color:#333;border-top-left-radius:5px;border-bottom-left-radius:5px;display:none;opacity:0.5"></div>
-	    	<div id="square_menu" style="position:absolute;z-index:10;margin-top:5px;right:-160;width:150px;height:200px;background-color:#333;border-bottom-left-radius:5px;border-top-right-radius:5px;border-bottom-right-radius:5px;display:none;opacity:0.5">
+	    	<div id="square_menu" style="position:absolute;z-index:10;margin-top:5px;right:-160;width:150px;height:250px;background-color:#333;border-bottom-left-radius:5px;border-top-right-radius:5px;border-bottom-right-radius:5px;display:none;opacity:0.5">
 	    		<div style="width:150px;height:50px;text-align:center;color:white;font-size:20;pointer-events:none;cursor:default;margin-top:8px;">Select</div>
-	    		<div style="width:150px;height:50px;text-align:center;color:white;"><a href="" id="dog"><i class="fas fa-dog"></i> Dogs</a></div>
-	    		<div style="width:150px;height:50px;text-align:center;color:white;"><a href="" id="cat"><i class="fas fa-cat"></i> Cats</a></div>
-	    		<div style="width:150px;height:50px;text-align:center;color:white;"><a href="" id="other"><i class="fas fa-paw"></i> Others</a></div>
+	    		<div style="width:150px;height:50px;text-align:center;color:white;"><a href="adoptionList" id="all"><i class="fas fa-th-list"></i> All</a></div>
+	    		<div style="width:150px;height:50px;text-align:center;color:white;"><a href="adoptionList?PETTYPE=1" id="dog"><i class="fas fa-dog"></i> Dogs</a></div>
+	    		<div style="width:150px;height:50px;text-align:center;color:white;"><a href="adoptionList?PETTYPE=2" id="cat"><i class="fas fa-cat"></i> Cats</a></div>
+	    		<div style="width:150px;height:50px;text-align:center;color:white;"><a href="adoptionList?PETTYPE=3" id="other"><i class="fas fa-paw"></i> Others</a></div>
 	    	</div>
 	    	<i id="square" class="fas fa-th-large" style="position:absolute;right:0;margin-top:11px;font-size:30px;color:gray"></i>
-   		</div>
+   		</div>s
 	</div>
 
 	<!-- 분양 리스트 -->
 	<div id="content3" style="position:relative;width:100%;height:750px;background-color:#f0efef;">
 		<div id="petList_container" style="position:relative;width:1080px;height:750px;margin:0 auto">
-			<div class="petList" >
-				<img class="pets" src="resources/img/dog1.jpg"  />
-				<a href="" ><i class="fas fa-venus" style="color:hotpink;"></i>&nbsp; 미니 핀  1살</a><br>
-				<i class="fas fa-eye" style="margin-top:10px;color:gray"> 30&nbsp;<i class="fas fa-thumbtack"> 2</i></i>
-			</div>
-			<div class="petList">
-				<img class="pets" src="resources/img/dog3.jpg"  />
-				<a href="" >
-				<i class="fas fa-venus" style="color:hotpink;"></i> 
-				<i class="fas fa-venus" style="color:hotpink;"></i> 
-				<i class="fas fa-mars"style="color:#4285F4;"></i>
-				 포메라니안  1살</a><br>
-				<i class="fas fa-eye" style="margin-top:10px;color:gray"> 30&nbsp;<i class="fas fa-thumbtack"> 2</i></i>
-			</div>
-			<div class="petList">
-				<img class="pets" src="resources/img/cat1.jpg"  />
-				<a href="" ><i class="fas fa-mars"style="color:#4285F4;"></i>&nbsp; 고양이  5개월</a><br>
-				<i class="fas fa-eye" style="margin-top:10px;color:gray"> 37&nbsp;<i class="fas fa-thumbtack"> 6</i></i>
-			</div>
-			<div class="petList">
-				<img class="pets" src="resources/img/rabbit1.jpg"  />
-				<a href="" ><i class="fas fa-venus" style="color:hotpink;"></i>&nbsp; 토끼  1살</a><br>
-				<i class="fas fa-eye" style="margin-top:10px;color:gray"> 37&nbsp;<i class="fas fa-thumbtack"> 6</i></i>
-			</div>
-			<div class="petList2">
-				<img class="pets" src="resources/img/cat2.jpg"  />
-				<a href="" ><i class="fas fa-mars"style="color:#4285F4;"></i>&nbsp; 페르시안  4개월</a><br>
-				<i class="fas fa-eye" style="margin-top:10px;color:gray"> 39&nbsp;<i class="fas fa-thumbtack"> 5</i></i>
-			</div>
-			<div class="petList2">
-				<img class="pets" src="resources/img/hamster1.jpg"  />
-				<a href="" ><i class="fas fa-venus" style="color:hotpink;"></i>&nbsp; 햄스터 2살</a><br>
-				<i class="fas fa-eye" style="margin-top:10px;color:gray"> 13&nbsp;<i class="fas fa-thumbtack"> 0</i></i>
-			</div>
-			<div class="petList2">
-				<img class="pets" src="resources/img/dog2.jpg"  />
-				<a href="" ><i class="fas fa-venus" style="color:hotpink;"></i>&nbsp; 푸들 6개월</a><br>
-				<i class="fas fa-eye" style="margin-top:10px;color:gray"> 29&nbsp;<i class="fas fa-thumbtack"> 7</i></i>
-			</div>
-			<div class="petList2">
-				<img class="pets" src="resources/img/cat3.jpg"  />
-				<a href="" ><i class="fas fa-mars"style="color:#4285F4;"></i>&nbsp; 랙돌 5개월</a><br>
-				<i class="fas fa-eye" style="margin-top:10px;color:gray"> 30&nbsp;<i class="fas fa-thumbtack"> 6</i></i>
-			</div>
+			<c:forEach var="list" items="${list}">
+				<c:choose>
+					<c:when test="${list.COMPLETE eq 'N'}">
+						<div class="petList" onclick="adoptionDetail(${list.SEQ},${list.ROOT})" style="cursor:pointer;">
+							<img class="pets" src="resources/img/dog1.jpg"  />
+							<c:choose>
+							<c:when test="${list.PETGENDER eq '남'}">
+								<i class="fas fa-mars"style="color:#4285F4;"></i>&nbsp; ${list.PETKIND}  ${list.PETAGE}<br>
+							</c:when>
+							<c:when test="${list.PETGENDER eq '여'}">
+								<i class="fas fa-venus" style="color:hotpink;"></i>&nbsp; ${list.PETKIND}  ${list.PETAGE}<br>
+							</c:when>
+							</c:choose>
+							<i class="fas fa-eye" style="margin-top:10px;color:gray"> ${list.CNT}&nbsp;<i class="fas fa-thumbtack"> ${list.RESERVE}</i></i>
+						</div>
+					</c:when>
+					
+					<c:when test="${list.COMPLETE eq 'Y'}">
+						<div class="petList" onclick="complete()" style="cursor:pointer;opacity:0.5;">
+							<img class="pets" src="resources/img/dog1.jpg"  />
+							<c:choose>
+							<c:when test="${list.PETGENDER eq '남'}">
+								<i class="fas fa-mars"style="color:#4285F4;"></i>&nbsp; ${list.PETKIND}  ${list.PETAGE}<br>
+							</c:when>
+							<c:when test="${list.PETGENDER eq '여'}">
+								<i class="fas fa-venus" style="color:hotpink;"></i>&nbsp; ${list.PETKIND}  ${list.PETAGE}<br>
+							</c:when>
+							</c:choose>
+							<font style="position:absolute;top:265px;left:85px;font-family: 'Do Hyeon', sans-serif;color:#da532c;font-size:20px;">분&nbsp;양&nbsp;완&nbsp;료</font>
+						</div>
+					</c:when>
+				</c:choose>
+				
+			</c:forEach>
 		</div>
 	</div>
 	
 	<!-- 로그인 팝업창 -->
 	<div id="mask"></div>
 	<div id="signIn_popup">
-		<form id="signIn_form" action="#">
+		<form id="signIn_form" method="post" autocomplete="off">
 	  		<h1 style="pointer-events:none;cursor:default;">Sign In</h1>
 	  		<div class="question">
-	    		<input type="text" required/>
+	    		<input type="text" id="logid" name="id" required/>
 	    		<label>UserID</label>
 	  		</div>
-	 		 <div class="question">
-	    		<input type="password" required/>
+	 		<div class="question">
+	    		<input type="password" id="logpw" name="pw" required/>
 	   			<label>Password</label>
 	  		</div>
-	  		<input type="button" value="로그인">
+	  		<div id="logincheck" style="position:relative;top:10px;text-align:center;color:#da532c;font-family:'Nanum Square';font-weight: bold;"></div>
+	  		<input type="button" value="로그인" onclick="login()" style="margin-top:25px;">
 	  		<i id="findid" class="fas fa-user" style="margin-left:170px;cursor:pointer;color:#333;"> Find ID</i>
 	  		<i id="findpw" class="fas fa-key" style="margin-left:20px;cursor:pointer;color:#333;"> Find PW</i>
 		</form>
@@ -656,6 +855,7 @@
 	</div>
 	
 	<!-- 이용약관 팝업창 -->
+	
 	<div id="signUp_wrap">
 		<form id="joincheck" action="" style="margin-top:100px;text-align:center;">
 			<div class="boxes" style="padding-left:100px;">
@@ -701,76 +901,83 @@ Petmily 서비스 회원 또는 비회원과의 관계를 설명하며,
 		  		<button id="signUp_close" style="left:40;float:left;cursor:pointer;"><i class="fas fa-arrow-left"></i>&nbsp;&nbsp;&nbsp;BACK</button>
 		  	</div>
 		  	<!-- 체크 검사 알림 -->
-			<div id="signUp_check" style="position:relative;to
-			p:-40px;color:#da532c;font-family:'Nanum Square';font-weight: bold;"></div>
+			<div id="signUp_check" style="position:relative;top:-40px;color:#da532c;font-family:'Nanum Square';font-weight: bold;"></div>
 		</form>
 	</div>
 	
 	<!-- 회원가입 팝업창 -->
 	<div id="mask"></div>
 	<div id="signUp_wrap1">
-		<form id="signUp_form" action="#">
+		<form id="signUp_form" action="memberjoin" autocomplete="off">
 		 <div style="position:relative;top:100px;display: grid;">		
 		  <label for="id" class="inp">
   		  	<input type="text" id="id" name="id" placeholder="&nbsp;">
   	      	<span class="label">아이디</span>
           	<span class="border"></span>
 	      </label>
-	      <div id="idArea" style="text-align:center;"></div>
+	      <div id="idArea" style="position:relative;top:10px;text-align:center;"></div>
+	      <div id="idArea2" style="position:absolute;top:20px;left:450px;"></div>
 	      <label for="pw" class="inp" style="top:20px;">
   		  	<input type="password" id="pw" name="pw" placeholder="&nbsp;">
   	      	<span class="label">비밀번호</span>
           	<span class="border"></span>
 	      </label>
-	      <div id="pwArea1" style="text-align:center;"></div>
+	      <div id="pwArea1" style="position:relative;top:30px;text-align:center;"></div>
+	      
 	      <label for="pwcheck" class="inp" style="top:40px;">
   		  	<input type="password" id="pwcheck" name="pwcheck" placeholder="&nbsp;">
   	      	<span class="label">비밀번호 확인</span>
           	<span class="border"></span>
 	      </label>
-	      <div id="pwArea2" style="text-align:center;"></div>
+	      <div id="pwArea2" style="position:absolute;top:160px;left:450px;"></div>
+	      
 	      <label for="name" class="inp" style="top:60px;">
   		  	<input type="text" id="name" name="name" placeholder="&nbsp;">
   	      	<span class="label">이름</span>
           	<span class="border"></span>
 	      </label>
-	      <div id="nameArea" style="text-align:center;"></div>
+	      <div id="nameArea" style="position:relative;top:70px;text-align:center;"></div>
 	      </div>
+	      
 	      <div style="position:relative;top:100px;left:200px;">
-	      <input type="checkbox" id="checkM" name="gender"value="M">
-  		  <label for="checkM" style="position:relative;top:80px;float:left;left:30px;"><font style="margin-left:20px;font-family:'Nanum Square';font-weight:bold;color:#333;">남성</font></label>
-  		  <input type="checkbox" id="checkF" name="gender"value="F">
-  		  <label for="checkF" style="position:relative;top:80px;left:110px;"><font style="margin-left:-20px;font-family:'Nanum Square';font-weight:bold;color:#333;">여성</font></label>
-	      <div id="genderArea" style="text-align:center;"></div>
+		      <input type="checkbox" id="checkM" name="gender" value="M">
+	  		  <label for="checkM" style="position:relative;top:80px;float:left;left:30px;"><font style="margin-left:20px;font-family:'Nanum Square';font-weight:bold;color:#333;">남성</font></label>
+	  		  <input type="checkbox" id="checkF" name="gender" value="F">
+	  		  <label for="checkF" style="position:relative;top:80px;left:110px;"><font style="margin-left:-20px;font-family:'Nanum Square';font-weight:bold;color:#333;">여성</font></label>
+	      <div id="genderArea" style="position:relative;top:90px;left:30px;"></div>
 	      </div>
+	      
 	      <div style="position:relative;top:180px;display: grid;">
 	         <label for="bday" class="inp" style="top:20px;">
-	             <input type="text" id="bday" name="bday" placeholder="&nbsp;">
+	             <input type="text" id="bday" name="bday" placeholder="&nbsp;"maxlength="6" oninput="maxLengthCheck(this)">
 	              <span class="label">생년월일 (6자리)</span>
 	             <span class="border"></span>
 	         </label>
-	         <div id="bdayArea" style="text-align:center;"></div>
-	         <label for="pnum1,pnum2,pnum3" class="inp" style="position:relative;top:40px;float:left;">
-	             <input type="text" id="pnum1" name="hp1" placeholder="&nbsp;" style="width:31.9%;">
+	       <div id="bdayArea" style="position:relative;top:30px;text-align:center;"></div>
+	       
+	         <label for="hp1,hp2,hp3" class="inp" style="position:relative;top:40px;float:left;">
+	             <input type="text" id="hp1" name="hp1" placeholder="&nbsp;" style="width:31.9%;"maxlength="3" oninput="maxLengthCheck(this)">
 	             <span class="label">(010)</span>
 	             <span class="border" style="width:31.9%;"></span>
-	             <input type="text" id="pnum2" name="hp2" placeholder="&nbsp;" style="width:31.9%;">
+	             <input type="text" id="hp2" name="hp2" placeholder="&nbsp;" style="width:31.9%;"maxlength="4" oninput="maxLengthCheck(this)">
 	             <span class="label" style="left:97px;">0000</span>
 	             <span class="border"style="width:31.9%;left:94.7px;"></span>
-	             <input type="text" id="pnum3" name="hp3" placeholder="&nbsp;"style="width:31.9%;">
+	             <input type="text" id="hp3" name="hp3" placeholder="&nbsp;"style="width:31.9%;"maxlength="4" oninput="maxLengthCheck(this)">
 	             <span class="label" style="left:192px;">0000</span>
 	             <span class="border"style="width:31.9%;left:189.7px;"></span>
 	         </label>
-	         <div id="phnumArea" style="text-align:center;"></div>
+	         <div id="phnumArea" style="position:relative;top:50px;text-align:center;"></div>
 	        </div>
+	        
 	        <div style="position:relative;top:250px;text-align:center;">
         		<div style="font-size:14px; font-family:'Nanum Square';font-weight:bold;color:#333;opacity:0.7;">애완동물 키워본 경험</div>
 		        <input type="checkbox" id="yes" name="exp"value="Y">
 		        <label for="yes" style="position:relative;top:10px;float:left;left:230px;"><font style="margin-left:20px;font-family:'Nanum Square';font-weight:bold;color:#333;">있음</font></label>
 		        <input type="checkbox" id="no" name="exp"value="N">
 		        <label for="no" style="position:relative;top:10px;left:310px;width: 63px;padding-left: 0px;"><font style="margin-left:-30px;font-family:'Nanum Square';font-weight:bold;color:#333;">없음</font></label>
-		        <div id="expArea" style="text-align:center;"></div>
+		        <div id="expArea" style="position:relative;top:20px;text-align:center;"></div>
 		    </div>
+		    
 		    <div id="exp" style="position:relative;top:280px;display:none;">
 			    <label for="pets,period" class="inp" style="position:relative;top:0;float:left;">
 			    <input type="text" id="pets" name="detail1" placeholder="&nbsp;" style="width:49%;z-index:10;">
@@ -780,13 +987,51 @@ Petmily 서비스 회원 또는 비회원과의 관계를 설명하며,
 			    <span class="label" style="left:145px;">기간</span>
 			    <span class="border"style="width:49%;left:142.5px;"></span>
 			    </label>
-			    <div id="expDetailArea" style="text-align:center;"></div>
+			    <div id="expDetailArea" style="position:relative;top:10;text-align:center;"></div>
 		    </div>
+		    
 		    <div class="buttonnn" style="position:absolute; top:710px;width:600px;" >
 			    <button onclick="joincheck()" type="button" style="right:40;float:right;">NEXT&nbsp;&nbsp;&nbsp;<i class="fas fa-arrow-right"></i></button>
 			    <button id="signUp_close1" style="left:40;float:left;"><i class="fas fa-arrow-left"></i>&nbsp;&nbsp;&nbsp;BACK</button>
 		    </div>
 		</form>
+	</div>
+	
+	<!-- 상세보기 팝업창 -->
+	<div id="mask"></div>
+	<div id="adoptionDetail">
+		<div id="detailForm">
+		</div>
+	
+	</div>	
+	
+	<!-- 동물병원 찾기 -->
+	<div id="findHospital_form">
+		<!-- 검색 창 -->
+		<div style="width:100%;height:150px;">
+			<div style="position:relative; top:20; width:200px;height:20px;margin:0 auto;font-size:30px;font-family: 'Do Hyeon', sans-serif;font-weight:bold;color:#333;">FIND HOSPITAL</div>
+			<div style="position:relative;top:50;left:-20;width:300px;margin:0 auto;">
+				<label for="search" class="inp">
+					<input type="text" id="search" name="address" value="" placeholder="&nbsp;" style="font-family:'Nanum Square';font-weight:bold;color:#9098a9;">
+					<span class="label"><i class="fas fa-search" style="position:relative;float:right;"></i><span>
+					<span class="border"></span>
+				</label>
+				<button type="button" id="searchH" style="cursor:pointer;outline:none;position:relative;left:300;top:-30px;width:50px;height:30px;border-radius:10px;border:1px solid #f0efef;color:#333;font-weight:bold;background-color:#f0efef;">검색</button>
+			</div>
+		</div>
+		
+		<!-- 하단 내용 -->
+		<div style="width:100%;height:500px;">
+			<!-- 리스트 -->
+			<div style="position:relative;width:45%;height:500px;float:left;">
+				<!-- 경계선 -->
+				<div style="position:absolute; width:2px;height:450px;margin:25px 0;top:0;right:0;background-color:#f0efef;"></div>
+			</div>
+			
+			<!-- 지도 -->
+			<div style="position:relative;width:55%;height:500px;">
+			</div>
+		</div>
 	</div>
 </body>
 </html>
