@@ -308,13 +308,13 @@ body {
 			});
 		});
 	
-	function adoptionDetail(n){
+	function adoptionDetail(n,r){
 		$.ajax({
 			type:'Post',
 			url:"adoptionDetail",
 			data:{
 				seq:n,
-				root:${list.ROOT},
+				root:r,
 			},
 			success:function(result){
 				$('#detailForm').html(result)
@@ -323,6 +323,10 @@ body {
 		$("#adoptionDetail").css("display", "block"); 
 		$("#mask").css("display", "block"); 
 		
+	}
+	
+	function complete(){
+		alert('분양이 완료되어 더 이상 열람할 수 없습니다.');
 	}
 	
 	
@@ -403,7 +407,7 @@ body {
 			<c:forEach var="list" items="${list}">
 				<c:choose>
 					<c:when test="${list.COMPLETE eq 'N'}">
-						<div class="petList" onclick="adoptionDetail(${list.SEQ})" style="cursor:pointer;">
+						<div class="petList" onclick="adoptionDetail(${list.SEQ},${list.ROOT})" style="cursor:pointer;">
 							<img class="pets" src="resources/img/dog1.jpg"  />
 							<c:choose>
 							<c:when test="${list.PETGENDER eq '남'}">
@@ -418,7 +422,7 @@ body {
 					</c:when>
 					
 					<c:when test="${list.COMPLETE eq 'Y'}">
-						<div class="petList" onclick="adoptionDetail(${list.SEQ})" style="cursor:pointer;opacity:0.5;">
+						<div class="petList" onclick="complete()" style="cursor:pointer;opacity:0.5;">
 							<img class="pets" src="resources/img/dog1.jpg"  />
 							<c:choose>
 							<c:when test="${list.PETGENDER eq '남'}">

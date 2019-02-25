@@ -208,8 +208,7 @@ $(document).ready(function(){
 	
 	
 	
-	function REinsert(r,s,i,id){
-		
+	function REinsert(r,s,i,id,img){
 		$.ajax({
 			type:'Post',
 			url:"REinsert",
@@ -219,6 +218,7 @@ $(document).ready(function(){
 				indent:i,
 				id:id,
 				content:$('.form__field').val(),
+				myimage:img,
 			},
 			success:function(result){
 				$('#RElist').html(result)
@@ -259,16 +259,17 @@ $(document).ready(function(){
       <!-- 사진 -->
       <div style="position:relative;width:100%;height:400px;;background-color:#F8F8F8;">
       	<div style="position:relative;top:30px;left:38px;width:400px;height:350px;background-image:url('${detail.MAINIMG}');background-size:cover;"></div>
-      	<div id="sub0" style="position:absolute;top:30px;left:450px;width:150px;height:170px;background-size:cover;"></div>
-		<div id="sub1" style="position:absolute;top:30px;left:610px;width:150px;height:170px;background-size:cover;"></div>
-		<div id="sub2" style="position:absolute;top:210px;left:450px;width:150px;height:170px;background-size:cover;"></div>
-		<div id="sub3" style="position:absolute;top:210px;left:610px;width:150px;height:170px;background-size:cover;"></div>
+      	<div id="sub0" style="position:absolute;top:30px;left:450px;width:150px;height:170px;background-size:cover;background-color:#fff;text-align:center;padding-top:80px;"><font id="img0">NO IMAGE</font></div>
+		<div id="sub1" style="position:absolute;top:30px;left:610px;width:150px;height:170px;background-size:cover;background-color:#fff;text-align:center;padding-top:80px;"><font id="img1">NO IMAGE</font></div>
+		<div id="sub2" style="position:absolute;top:210px;left:450px;width:150px;height:170px;background-size:cover;background-color:#fff;text-align:center;padding-top:80px;"><font id="img2">NO IMAGE</font></div>
+		<div id="sub3" style="position:absolute;top:210px;left:610px;width:150px;height:170px;background-size:cover;background-color:#fff;text-align:center;padding-top:80px;"><font id="img3">NO IMAGE</font></div>
       </div> 
        <script>
          $(document).ready(function () {
             var subImgSplit = '${detail.SUBIMG}'.split(',');
             for(var i in subImgSplit) {
                $('#sub'+i).css('background-image','url("'+subImgSplit[i]+'")');
+               $('#img'+i).css('display','none');
             }
          });
       </script>
@@ -285,7 +286,7 @@ $(document).ready(function(){
 					<div class="container__item" style="position:relative;top:30px;">
 						<form class="form" action="adoptionRE">
 							<input type="text" class="form__field" placeholder="댓글 쓰기" value=""/>
-							<button type="button" onclick="REinsert(${detail.ROOT},${detail.STEP},${detail.INDENT},'${Login.id}'})" class="btn btn--primary btn--inside uppercase">등록</button>
+							<button type="button" onclick="REinsert(${detail.ROOT},${detail.STEP},${detail.INDENT},'${Login.id}','${Login.myimage}')" class="btn btn--primary btn--inside uppercase">등록</button>
 						</form>
 					</div>
 					<!-- 댓글 -->

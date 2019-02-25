@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -689,6 +690,10 @@
 	}
 	
 	function adoptionDetail(n,r){
+		if(${Login.id==null}){
+			alert('로그인 후 이용해주세요.');
+			return;
+		}
 		$.ajax({
 			type:'Post',
 			url:"adoptionDetail",
@@ -708,6 +713,69 @@
 	
 	function complete(){
 		alert('분양이 완료되어 더 이상 열람할 수 없습니다.');
+	}
+	
+	function findHospital(){
+		$.ajax({
+			url: 'findHospital',
+            type: 'get',
+            data : {
+            	SIGUN_NM:$('#search').val(),
+            },//data          
+            dataType: 'json',
+            success:function(data){
+            	var myItem = data.Animalhosptl[1].row;                                //이 경로 내부에 데이터가 들어있음
+                var output = '';
+                $.each(myItem,function(key,value) {
+                    output += '<div onclick="aaaabbbb(\'' + value.REFINE_ROADNM_ADDR + '\')">'+value.BIZPLC_NM+'</div>';
+                });//$.each
+                  $("#hospitalList").html(output);
+            },//success
+                error: function(XMLHttpRequest, textStatus, errorThrown) { 
+               alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+          }// error
+		});//ajax
+	}//function findHospital
+	
+	// 지도
+	function map(address){
+		
+		var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+	    mapOption = {
+	        center: new daum.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+	        level: 3 // 지도의 확대 레벨
+	    };  
+	
+		// 지도를 생성합니다    
+		var map = new daum.maps.Map(mapContainer, mapOption); 
+		
+		// 주소-좌표 변환 객체를 생성합니다
+		var geocoder = new daum.maps.services.Geocoder();
+		
+		// 주소로 좌표를 검색합니다
+		geocoder.addressSearch(address, function(result, status) {
+		
+		    // 정상적으로 검색이 완료됐으면 
+		     if (status === daum.maps.services.Status.OK) {
+		
+		        var coords = new daum.maps.LatLng(result[0].y, result[0].x);
+		
+		        // 결과값으로 받은 위치를 마커로 표시합니다
+		        var marker = new daum.maps.Marker({
+		            map: map,
+		            position: coords
+		        });
+		
+		        // 인포윈도우로 장소에 대한 설명을 표시합니다
+		        var infowindow = new daum.maps.InfoWindow({
+		            content: '<div style="width:150px;text-align:center;padding:6px 0;border-radius:10px;">분양 위치</div>'
+		        });
+		        infowindow.open(map, marker);
+		
+		        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+		        map.setCenter(coords);
+		    } 
+		});
 	}
 </script>
 <body>
@@ -1016,22 +1084,23 @@ Petmily 서비스 회원 또는 비회원과의 관계를 설명하며,
 					<span class="label"><i class="fas fa-search" style="position:relative;float:right;"></i><span>
 					<span class="border"></span>
 				</label>
-				<button type="button" id="searchH" style="cursor:pointer;outline:none;position:relative;left:300;top:-30px;width:50px;height:30px;border-radius:10px;border:1px solid #f0efef;color:#333;font-weight:bold;background-color:#f0efef;">검색</button>
+				<button type="button" onclick="findHospital()"id="searchH" style="cursor:pointer;outline:none;position:relative;left:300;top:-30px;width:50px;height:30px;border-radius:10px;border:1px solid #f0efef;color:#333;font-weight:bold;background-color:#f0efef;">검색</button>
 			</div>
 		</div>
 		
-		<!-- 하단 내용 -->
-		<div style="width:100%;height:500px;">
-			<!-- 리스트 -->
-			<div style="position:relative;width:45%;height:500px;float:left;">
-				<!-- 경계선 -->
-				<div style="position:absolute; width:2px;height:450px;margin:25px 0;top:0;right:0;background-color:#f0efef;"></div>
-			</div>
-			
-			<!-- 지도 -->
-			<div style="position:relative;width:55%;height:500px;">
-			</div>
-		</div>
-	</div>
+		      <!-- 하단 내용 -->
+      <div style="width:100%;height:500px;">
+         <!-- 리스트 -->
+         <div id="hospitalList" style="position:relative;width:45%;height:500px;float:left;">
+            <div id="hospitalList_container" style="overflow-x:auto;overflow-y:auto;position:relative;width:390px;height:450px;margin:25px 0;float:left;padding-left:15px;">
+            </div>
+            <!-- 경계선 -->
+            <div style="position:absolute; width:2px;height:450px;margin:25px 0;top:0;right:0;background-color:#f0efef;"></div>
+         </div>
+         
+         <!-- 지도 -->
+         <div id="map"style="position:relative;width:55%;height:500px;float:right">
+         </div>
+      </div>
 </body>
 </html>

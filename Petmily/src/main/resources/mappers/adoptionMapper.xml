@@ -31,16 +31,16 @@
  	</select>
  	
  	<insert id="REinsert" parameterType="hashmap">
-	insert into adoptionreply (seq, id, content, rdate,root, root1,step, indent) values
-		((select nvl(max(seq),0)+1 from adoptionreply),#{id},#{content},sysdate,#{root},#{root1},#{step},#{indent})
+	insert into adoptionreply (seq, id, content, rdate,root, root1,step, indent, myimage) values
+		((select nvl(max(seq),0)+1 from adoptionreply),#{id},#{content},sysdate,#{root},#{root1},#{step},#{indent},#{myimage})
 	</insert>
 	
 	<select id="RElist" resultType="hashmap">
-		select seq,id,content,to_char(rdate,'yyyy/mm/dd') rdate,root,step,indent from adoptionreply where root=${root} order by seq asc
+		select seq,id,content,to_char(rdate,'yyyy/mm/dd') rdate,root,step,indent,myimage from adoptionreply where root=${root} order by seq asc
 	</select>
 	
 	<select id="RErelist" resultType="hashmap">
-		select seq,id,content,to_char(rdate,'yyyy/mm/dd') rdate,root,step,indent from adoptionreply where root=${root} and root1=${root1} order by seq asc
+		select seq,id,content,to_char(rdate,'yyyy/mm/dd') rdate,root,step,indent,myimage from adoptionreply where root=${root} and root1=${root1} order by seq asc
 	</select>
 	
 	<update id="completeUpdate">	

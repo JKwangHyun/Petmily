@@ -1,14 +1,24 @@
 package aaa.bbb.ccc.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+
+import org.apache.commons.io.IOUtils;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +56,7 @@ public class AdoptionController {
 			  throws ServletException, IOException{
 		
 		List<Map<String,Object>> list = aDao.adoptionList(map);
+		System.out.println(list);
 		mav.addObject("list",list);
 		
 		if(map.get("PETTYPE")!="") {
@@ -59,8 +70,8 @@ public class AdoptionController {
 	@RequestMapping(value="/adoptionDetail")
 	   public ModelAndView adoptionDetail(@RequestParam Map<String,Object> map,HttpServletRequest request, ModelAndView mav,MemberVO mvo)
 			  throws ServletException, IOException{
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!"+map.get("id"));
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!"+map.get("root"));
+		System.out.println(map.get("root"));
+		
 		Map<String,Object> likeCheck = aDao.likeCheck(map);
 		aDao.likeCount(map);
 		Map<String,Object> detail = aDao.adoptionDetail(map);
@@ -119,7 +130,7 @@ public class AdoptionController {
 	@RequestMapping(value="/REinsert")
 	   public ModelAndView REinsert(@RequestParam Map<String,Object> map,HttpServletRequest request, ModelAndView mav,RedirectAttributes redirectAttributes	)
 			  throws ServletException, IOException{
-		
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+map.get("myimage"));
 		int step = Integer.valueOf((String)map.get("step"));
 		int indent = Integer.valueOf((String)map.get("indent"));
 		int root1 = 0;
@@ -260,7 +271,48 @@ public class AdoptionController {
 		return mav;
 	   }
 		
+   @RequestMapping(value="/findHospital")
+	public void findHospital(HttpServletRequest request, HttpServletResponse response) 
+			throws Exception {
+	   
+     	request.setCharacterEncoding("utf-8");
+	    response.setContentType("text/html; charset=utf-8"); 
 
+	   
+        String addr = " https://openapi.gg.go.kr/Animalhosptl?Key=";
+        String serviceKey = "d2c430694f4e4048af071fd2acbfce2c";
+        String parameter = "";
+        String SIGUN_NM = URLEncoder.encode(request.getParameter("SIGUN_NM"),"utf-8");
+        PrintWriter out = response.getWriter();                                        //클라이언트로 보낼 TEXT DATA, JSON에 넣을 때 쭉 나열하는듯
+ 
+        parameter = parameter + "&" + "SIGUN_NM=" + SIGUN_NM;        //JSP에서 받아올 contentid, contentTypeid
+        parameter = parameter + "&" + "pIndex=1";
+        parameter = parameter + "&" + "pSize=100";
+        parameter = parameter + "&" + "Type=json";
+ 
+        addr = addr + serviceKey + parameter;
+        URL url = new URL(addr);
+ 
+        System.out.println(addr);
+ 
+        InputStream in = url.openStream();                            //URL로 부터 자바로 데이터 읽어오도록 URL객체로 스트림 열기
+ 
+        ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
+        IOUtils.copy(in, bos1);
+        in.close();
+        bos1.close();
+ 
+        String mbos = bos1.toString("UTF-8");    
+         
+        byte[] b = mbos.getBytes("UTF-8");
+        String s = new String(b, "UTF-8");        //String으로 풀었다가 byte배열로 했다가 다시 String으로 해서 json에 저장할 배열을 print?? 여긴 잘 모르겠다
+        out.println(s);
+        System.out.println(s);
+        
+        
+        JSONObject json = new JSONObject();
+        json.put("data", s);                                                           
+    }
 }
 	
 	/*@RequestMapping(value="/RElist")

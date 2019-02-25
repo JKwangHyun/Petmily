@@ -36,7 +36,31 @@ body {
 	}
 </style>
 <script>
-
+	function adoptionDetail(n,r){
+		if(${Login.id==null}){
+			alert('로그인 후 이용해주세요.');
+			return;
+		}
+		$.ajax({
+			type:'Post',
+			url:"adoptionDetail",
+			data:{
+				seq:n,
+				root:r,
+				id:'${Login.id}',
+			},
+			success:function(result){
+				$('#detailForm').html(result)
+			}
+		});
+		$("#adoptionDetail").css("display", "block"); 
+		$("#mask").css("display", "block"); 
+		
+	}
+	
+	function complete(){
+		alert('분양이 완료되어 더 이상 열람할 수 없습니다.');
+	}
 	
 	
 </script>
@@ -46,7 +70,7 @@ body {
 			<c:forEach var="list" items="${list}">
 				<c:choose>
 					<c:when test="${list.COMPLETE eq 'N'}">
-						<div class="petList" onclick="adoptionDetail(${list.SEQ})" style="cursor:pointer;">
+						<div class="petList" onclick="adoptionDetail(${list.SEQ},${list.ROOT})" style="cursor:pointer;">
 							<img class="pets" src="resources/img/dog1.jpg"  />
 							<c:choose>
 							<c:when test="${list.PETGENDER eq '남'}">
@@ -61,7 +85,7 @@ body {
 					</c:when>
 					
 					<c:when test="${list.COMPLETE eq 'Y'}">
-						<div class="petList" onclick="adoptionDetail(${list.SEQ})" style="cursor:pointer;opacity:0.5;">
+						<div class="petList" onclick="complete()" style="cursor:pointer;opacity:0.5;">
 							<img class="pets" src="resources/img/dog1.jpg"  />
 							<c:choose>
 							<c:when test="${list.PETGENDER eq '남'}">
